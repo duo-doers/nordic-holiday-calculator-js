@@ -25,12 +25,18 @@ class Year {
   }
 
   loadHolidays(): void {
-    if (this.country === "FI") {
-      this.loadFIHolidays();
-    } else if (this.country === "SE") {
-      this.loadSEHolidays();
-    } else {
-      this.loadNOHolidays();
+    switch (this.country) {
+      case "FI":
+        this.loadFIHolidays();
+        break;
+      case "SE":
+        this.loadSEHolidays();
+        break;
+      case "NO":
+        this.loadNOHolidays();
+        break;
+      default:
+        throw new Error(`Unsupported country: ${this.country}`);
     }
   }
 
@@ -51,7 +57,7 @@ class Year {
     this.addHoliday(dateUtils.createDate(this.year, 12, 25), "Christmas Day");
     this.addHoliday(
       dateUtils.createDate(this.year, 12, 26),
-      "St. Stephen's Day",
+      "Second Day of Christmas",
     );
   }
 

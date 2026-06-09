@@ -83,12 +83,20 @@ export function goodFriday(year: number): Date {
   return resolveFriday();
 }
 
+export function maundyThursday(year: number): Date {
+  return subtractDays(easterSunday(year), 3);
+}
+
 export function ascensionDay(year: number): Date {
   return addDays(easterSunday(year), 39);
 }
 
 export function pentecost(year: number): Date {
   return addDays(easterSunday(year), 49);
+}
+
+export function whitMonday(year: number): Date {
+  return addDays(easterSunday(year), 50);
 }
 
 export function midsummerEve(year: number): Date {

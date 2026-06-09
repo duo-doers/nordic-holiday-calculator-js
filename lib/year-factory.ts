@@ -1,4 +1,5 @@
 import * as dateUtils from "./date-utils";
+import type { Country } from "../index";
 
 export interface Holiday {
   year: number;
@@ -9,11 +10,13 @@ export interface Holiday {
 
 class Year {
   year: number;
+  country: Country;
   holidays: Record<number, Holiday[]>;
 
-  constructor(year: number) {
+  constructor(year: number, country: Country) {
     if (year > 0) {
       this.year = year;
+      this.country = country;
       this.holidays = {};
       this.loadHolidays();
     } else {
@@ -22,6 +25,16 @@ class Year {
   }
 
   loadHolidays(): void {
+    if (this.country === "FI") {
+      this.loadFIHolidays();
+    } else if (this.country === "SE") {
+      this.loadSEHolidays();
+    } else {
+      this.loadNOHolidays();
+    }
+  }
+
+  loadFIHolidays(): void {
     this.addHoliday(dateUtils.createDate(this.year, 1, 1), "New Year's Day");
     this.addHoliday(dateUtils.createDate(this.year, 1, 6), "Epiphany");
     this.addHoliday(dateUtils.goodFriday(this.year), "Good Friday");
@@ -39,6 +52,47 @@ class Year {
     this.addHoliday(
       dateUtils.createDate(this.year, 12, 26),
       "St. Stephen's Day",
+    );
+  }
+
+  loadSEHolidays(): void {
+    this.addHoliday(dateUtils.createDate(this.year, 1, 1), "New Year's Day");
+    this.addHoliday(dateUtils.createDate(this.year, 1, 6), "Epiphany");
+    this.addHoliday(dateUtils.goodFriday(this.year), "Good Friday");
+    this.addHoliday(dateUtils.easterSunday(this.year), "Easter Sunday");
+    this.addHoliday(dateUtils.easterMonday(this.year), "Easter Monday");
+    this.addHoliday(dateUtils.createDate(this.year, 5, 1), "May Day");
+    this.addHoliday(dateUtils.ascensionDay(this.year), "Ascension Day");
+    this.addHoliday(dateUtils.pentecost(this.year), "Whit Sunday");
+    this.addHoliday(dateUtils.createDate(this.year, 6, 6), "National Day");
+    this.addHoliday(dateUtils.midsummerEve(this.year), "Midsummer Eve");
+    this.addHoliday(dateUtils.midsummerDay(this.year), "Midsummer Day");
+    this.addHoliday(dateUtils.allSaintsDay(this.year), "All Saints' Day");
+    this.addHoliday(dateUtils.createDate(this.year, 12, 24), "Christmas Eve");
+    this.addHoliday(dateUtils.createDate(this.year, 12, 25), "Christmas Day");
+    this.addHoliday(
+      dateUtils.createDate(this.year, 12, 26),
+      "Second Day of Christmas",
+    );
+    this.addHoliday(dateUtils.createDate(this.year, 12, 31), "New Year's Eve");
+  }
+
+  loadNOHolidays(): void {
+    this.addHoliday(dateUtils.createDate(this.year, 1, 1), "New Year's Day");
+    this.addHoliday(dateUtils.maundyThursday(this.year), "Maundy Thursday");
+    this.addHoliday(dateUtils.goodFriday(this.year), "Good Friday");
+    this.addHoliday(dateUtils.easterSunday(this.year), "Easter Sunday");
+    this.addHoliday(dateUtils.easterMonday(this.year), "Easter Monday");
+    this.addHoliday(dateUtils.createDate(this.year, 5, 1), "Labour Day");
+    this.addHoliday(dateUtils.createDate(this.year, 5, 17), "Constitution Day");
+    this.addHoliday(dateUtils.ascensionDay(this.year), "Ascension Day");
+    this.addHoliday(dateUtils.pentecost(this.year), "Whit Sunday");
+    this.addHoliday(dateUtils.whitMonday(this.year), "Whit Monday");
+    this.addHoliday(dateUtils.createDate(this.year, 12, 24), "Christmas Eve");
+    this.addHoliday(dateUtils.createDate(this.year, 12, 25), "Christmas Day");
+    this.addHoliday(
+      dateUtils.createDate(this.year, 12, 26),
+      "Second Day of Christmas",
     );
   }
 
@@ -77,6 +131,6 @@ class Year {
   }
 }
 
-export function get(year: number): Year {
-  return new Year(year);
+export function get(year: number, country: Country): Year {
+  return new Year(year, country);
 }

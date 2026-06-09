@@ -4,13 +4,11 @@ A TypeScript library for listing Nordic national holidays. With 0 production dep
 
 Currently supported countries, and planned support:
 
-- [x] Finland
-- [ ] Sweden
-- [ ] Norway
+- [x] Finland (FI)
+- [x] Sweden (SE)
+- [x] Norway (NO)
 
 ## Installation
-
-Then install:
 
 ```sh
 pnpm add nordic-holiday-calculator-js
@@ -21,26 +19,27 @@ pnpm add nordic-holiday-calculator-js
 ```ts
 import * as NordicHolidays from "nordic-holiday-calculator-js";
 
-// Country defaults to 'FI'. Currently supported: 'FI'. Coming soon: 'SE', 'NO'.
+// Country is a required parameter for all functions.
 
 // Get all non-weekend holidays for a year
-NordicHolidays.year(2025);
-NordicHolidays.year(2025, false, "FI"); // explicit country
+NordicHolidays.year(2025, "FI");
+NordicHolidays.year(2025, "SE");
+NordicHolidays.year(2025, "NO");
 
 // Include holidays falling on weekends
-NordicHolidays.year(2025, true);
+NordicHolidays.year(2025, "FI", true);
 
 // Get holidays for a specific month
-NordicHolidays.month(12, 2025);
+NordicHolidays.month(12, 2025, "FI");
 
 // Get the next N upcoming holidays (default: 3)
-NordicHolidays.next(5);
+NordicHolidays.next("FI", 5);
 
 // Get the holiday after a given one (by month, year, index)
-NordicHolidays.after(6, 2025, 0);
+NordicHolidays.after(6, 2025, 0, "FI");
 
 // Get the holiday before a given one
-NordicHolidays.before(12, 2025, 0);
+NordicHolidays.before(12, 2025, 0, "FI");
 ```
 
 ### `Country` type
@@ -48,8 +47,6 @@ NordicHolidays.before(12, 2025, 0);
 ```ts
 type Country = "FI" | "SE" | "NO";
 ```
-
-`"SE"` and `"NO"` are reserved for future implementation and will throw error if used.
 
 ### `Holiday` object shape
 

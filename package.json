@@ -1,0 +1,37 @@
+{
+  "name": "nordic-holiday-calculator-js",
+  "version": "1.1.0",
+  "description": "A library for listing Nordic national holidays.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "prepublishOnly": "pnpm test && pnpm build",
+    "release:patch": "pnpm version patch && pnpm publish",
+    "release:minor": "pnpm version minor && pnpm publish",
+    "release:major": "pnpm version major && pnpm publish"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
+  "keywords": [],
+  "author": "Jan Sobotka, Riku Eteläniemi",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:Rikusor/nordic-holiday-calculator-js.git"
+  },
+  "license": "MIT",
+  "packageManager": "pnpm@10.30.2",
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.4.11",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}

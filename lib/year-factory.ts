@@ -40,6 +40,7 @@ class Year {
     }
   }
 
+  // @source https://en.wikipedia.org/wiki/Public_holidays_in_Finland
   loadFIHolidays(): void {
     this.addHoliday(dateUtils.createDate(this.year, 1, 1), "New Year's Day");
     this.addHoliday(dateUtils.createDate(this.year, 1, 6), "Epiphany");
@@ -61,6 +62,7 @@ class Year {
     );
   }
 
+  // @source https://en.wikipedia.org/wiki/Public_holidays_in_Sweden
   loadSEHolidays(): void {
     this.addHoliday(dateUtils.createDate(this.year, 1, 1), "New Year's Day");
     this.addHoliday(dateUtils.createDate(this.year, 1, 6), "Epiphany");
@@ -83,6 +85,7 @@ class Year {
     this.addHoliday(dateUtils.createDate(this.year, 12, 31), "New Year's Eve");
   }
 
+  // @source https://en.wikipedia.org/wiki/Public_holidays_in_Norway
   loadNOHolidays(): void {
     this.addHoliday(dateUtils.createDate(this.year, 1, 1), "New Year's Day");
     this.addHoliday(dateUtils.maundyThursday(this.year), "Maundy Thursday");

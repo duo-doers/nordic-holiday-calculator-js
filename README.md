@@ -83,23 +83,18 @@ interface Holiday {
 ```sh
 pnpm install
 pnpm test       # run Jest tests
+pnpm typecheck  # run TypeScript type checks
 pnpm build      # compile TypeScript to dist/
 ```
 
 ## Publishing a new version
 
-Requires `NODE_AUTH_TOKEN` set in your environment (GitHub PAT with `write:packages`):
+Use the release scripts — they bump the version in `package.json`, commit, tag, and push. The GitHub Actions workflow then runs typecheck, tests, build, and publishes to npm automatically.
 
 ```sh
-pnpm release:patch   # 1.1.2 → 1.1.3
-pnpm release:minor   # 1.1.2 → 1.2.0
-pnpm release:major   # 1.1.2 → 2.0.0
-```
-
-Each command runs tests, builds, bumps the version, and publishes to GitHub Packages. Push the version commit and tag afterward:
-
-```sh
-git push && git push --tags
+pnpm release:patch   # e.g. 0.1.0 → 0.1.1
+pnpm release:minor   # e.g. 0.1.0 → 0.2.0
+pnpm release:major   # e.g. 0.1.0 → 1.0.0
 ```
 
 ## License

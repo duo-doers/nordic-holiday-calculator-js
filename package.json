@@ -8,9 +8,9 @@
     "build": "tsc -p tsconfig.build.json",
     "test": "jest",
     "prepublishOnly": "pnpm test && pnpm build",
-    "release:patch": "pnpm version patch && pnpm publish",
-    "release:minor": "pnpm version minor && pnpm publish",
-    "release:major": "pnpm version major && pnpm publish"
+    "release:patch": "pnpm version patch && git push && git push --tags",
+    "release:minor": "pnpm version minor && git push && git push --tags",
+    "release:major": "pnpm version major && git push && git push --tags"
   },
   "files": [
     "dist"

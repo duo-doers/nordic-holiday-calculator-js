@@ -6,36 +6,44 @@ import type { Country } from "../index";
 const MAX_HOLIDAYS = 100;
 
 interface Context {
-  y: number;
-  m: number;
-  d: number;
+  year: number;
+  month: number;
+  day: number;
   country: Country;
-  year: ReturnType<typeof yearFactory.get>;
+  holidays: ReturnType<typeof yearFactory.get>;
 }
 
-function createContext(
-  y: number | undefined,
-  m: number | undefined,
-  d: number | undefined,
-  country: Country,
-): Context {
+interface ContextOptions {
+  year?: number;
+  month?: number;
+  day?: number;
+  country: Country;
+}
+
+function createContext({ year, month, day, country }: ContextOptions): Context {
   const today = dateUtils.today();
-  const resolvedY = y || dateUtils.getYear(today);
-  const resolvedM = m || dateUtils.getMonth(today);
-  const resolvedD = d || dateUtils.getDay(today);
+  const resolvedYear = year || dateUtils.getYear(today);
+  const resolvedMonth = month || dateUtils.getMonth(today);
+  const resolvedDay = day || dateUtils.getDay(today);
   return {
-    y: resolvedY,
-    m: resolvedM,
-    d: resolvedD,
+    year: resolvedYear,
+    month: resolvedMonth,
+    day: resolvedDay,
     country,
-    year: yearFactory.get(resolvedY, country),
+    holidays: yearFactory.get(resolvedYear, country),
   };
 }
 
 function advanceMonth(ctx: Context): Context {
-  const y = ctx.m === 12 ? ctx.y + 1 : ctx.y;
-  const m = ctx.m === 12 ? 1 : ctx.m + 1;
-  return { ...ctx, y, m, d: 1, year: yearFactory.get(y, ctx.country) };
+  const year = ctx.month === 12 ? ctx.year + 1 : ctx.year;
+  const month = ctx.month === 12 ? 1 : ctx.month + 1;
+  return {
+    ...ctx,
+    year,
+    month,
+    day: 1,
+    holidays: yearFactory.get(year, ctx.country),
+  };
 }
 
 export function next(
@@ -43,7 +51,7 @@ export function next(
   count?: number,
   includeWeekends?: boolean,
 ): Holiday[] {
-  let ctx = createContext(undefined, undefined, undefined, country);
+  let ctx = createContext({ country });
   const limit = count || 3;
 
   if (limit > MAX_HOLIDAYS) {
@@ -54,12 +62,12 @@ export function next(
 
   while (holidays.length < limit) {
     if (!includeWeekends) {
-      ctx.year.discardWeekends();
+      ctx.holidays.discardWeekends();
     }
 
-    if (ctx.year.holidays[ctx.m] !== undefined) {
-      for (const holiday of ctx.year.holidays[ctx.m]) {
-        if (holidays.length < limit && holiday.day >= ctx.d) {
+    if (ctx.holidays.holidays[ctx.month] !== undefined) {
+      for (const holiday of ctx.holidays.holidays[ctx.month]) {
+        if (holidays.length < limit && holiday.day >= ctx.day) {
           holidays.push(holiday);
         }
       }
@@ -78,15 +86,15 @@ export function byYear(
   country: Country,
   includeWeekends?: boolean,
 ): Holiday[] {
-  const ctx = createContext(year, undefined, undefined, country);
+  const ctx = createContext({ year, country });
 
   if (!includeWeekends) {
-    ctx.year.discardWeekends();
+    ctx.holidays.discardWeekends();
   }
 
   const holidays: Holiday[] = [];
-  Object.keys(ctx.year.holidays).forEach((month) => {
-    ctx.year.holidays[Number(month)].forEach((holiday) =>
+  Object.keys(ctx.holidays.holidays).forEach((month) => {
+    ctx.holidays.holidays[Number(month)].forEach((holiday) =>
       holidays.push(holiday),
     );
   });
@@ -103,11 +111,11 @@ export function byMonth(
     throw Error("Month or year missing.");
   }
 
-  const ctx = createContext(year, month, undefined, country);
+  const ctx = createContext({ year, month, country });
 
   if (!includeWeekends) {
-    ctx.year.discardWeekends();
+    ctx.holidays.discardWeekends();
   }
 
-  return ctx.year.holidays[month] ?? [];
+  return ctx.holidays.holidays[month] ?? [];
 }

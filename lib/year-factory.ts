@@ -25,84 +25,7 @@ class Year {
   }
 
   loadHolidays(): void {
-    switch (this.country) {
-      case "FI":
-        this.loadFIHolidays();
-        break;
-      case "SE":
-        this.loadSEHolidays();
-        break;
-      case "NO":
-        this.loadNOHolidays();
-        break;
-      default:
-        throw new Error(`Unsupported country: ${this.country}`);
-    }
-  }
-
-  // @source https://en.wikipedia.org/wiki/Public_holidays_in_Finland
-  loadFIHolidays(): void {
-    this.addHoliday(dateUtils.createDate(this.year, 1, 1), "New Year's Day");
-    this.addHoliday(dateUtils.createDate(this.year, 1, 6), "Epiphany");
-    this.addHoliday(dateUtils.goodFriday(this.year), "Good Friday");
-    this.addHoliday(dateUtils.easterSunday(this.year), "Easter Sunday");
-    this.addHoliday(dateUtils.easterMonday(this.year), "Easter Monday");
-    this.addHoliday(dateUtils.createDate(this.year, 5, 1), "May Day");
-    this.addHoliday(dateUtils.ascensionDay(this.year), "Ascension Day");
-    this.addHoliday(dateUtils.pentecost(this.year), "Pentecost");
-    this.addHoliday(dateUtils.midsummerEve(this.year), "Midsummer Eve");
-    this.addHoliday(dateUtils.midsummerDay(this.year), "Midsummer Day");
-    this.addHoliday(dateUtils.allSaintsDay(this.year), "All Saints' Day");
-    this.addHoliday(dateUtils.createDate(this.year, 12, 6), "Independence Day");
-    this.addHoliday(dateUtils.createDate(this.year, 12, 24), "Christmas Eve");
-    this.addHoliday(dateUtils.createDate(this.year, 12, 25), "Christmas Day");
-    this.addHoliday(
-      dateUtils.createDate(this.year, 12, 26),
-      "Second Day of Christmas",
-    );
-  }
-
-  // @source https://en.wikipedia.org/wiki/Public_holidays_in_Sweden
-  loadSEHolidays(): void {
-    this.addHoliday(dateUtils.createDate(this.year, 1, 1), "New Year's Day");
-    this.addHoliday(dateUtils.createDate(this.year, 1, 6), "Epiphany");
-    this.addHoliday(dateUtils.goodFriday(this.year), "Good Friday");
-    this.addHoliday(dateUtils.easterSunday(this.year), "Easter Sunday");
-    this.addHoliday(dateUtils.easterMonday(this.year), "Easter Monday");
-    this.addHoliday(dateUtils.createDate(this.year, 5, 1), "May Day");
-    this.addHoliday(dateUtils.ascensionDay(this.year), "Ascension Day");
-    this.addHoliday(dateUtils.pentecost(this.year), "Whit Sunday");
-    this.addHoliday(dateUtils.createDate(this.year, 6, 6), "National Day");
-    this.addHoliday(dateUtils.midsummerEve(this.year), "Midsummer Eve");
-    this.addHoliday(dateUtils.midsummerDay(this.year), "Midsummer Day");
-    this.addHoliday(dateUtils.allSaintsDay(this.year), "All Saints' Day");
-    this.addHoliday(dateUtils.createDate(this.year, 12, 24), "Christmas Eve");
-    this.addHoliday(dateUtils.createDate(this.year, 12, 25), "Christmas Day");
-    this.addHoliday(
-      dateUtils.createDate(this.year, 12, 26),
-      "Second Day of Christmas",
-    );
-    this.addHoliday(dateUtils.createDate(this.year, 12, 31), "New Year's Eve");
-  }
-
-  // @source https://en.wikipedia.org/wiki/Public_holidays_in_Norway
-  loadNOHolidays(): void {
-    this.addHoliday(dateUtils.createDate(this.year, 1, 1), "New Year's Day");
-    this.addHoliday(dateUtils.maundyThursday(this.year), "Maundy Thursday");
-    this.addHoliday(dateUtils.goodFriday(this.year), "Good Friday");
-    this.addHoliday(dateUtils.easterSunday(this.year), "Easter Sunday");
-    this.addHoliday(dateUtils.easterMonday(this.year), "Easter Monday");
-    this.addHoliday(dateUtils.createDate(this.year, 5, 1), "Labour Day");
-    this.addHoliday(dateUtils.createDate(this.year, 5, 17), "Constitution Day");
-    this.addHoliday(dateUtils.ascensionDay(this.year), "Ascension Day");
-    this.addHoliday(dateUtils.pentecost(this.year), "Whit Sunday");
-    this.addHoliday(dateUtils.whitMonday(this.year), "Whit Monday");
-    this.addHoliday(dateUtils.createDate(this.year, 12, 24), "Christmas Eve");
-    this.addHoliday(dateUtils.createDate(this.year, 12, 25), "Christmas Day");
-    this.addHoliday(
-      dateUtils.createDate(this.year, 12, 26),
-      "Second Day of Christmas",
-    );
+    this.addHolidays(getConfig(this.year, this.country));
   }
 
   discardWeekends(): void {
@@ -126,6 +49,15 @@ class Year {
     this.holidays = filtered;
   }
 
+  addHolidays(entries: [Date, string][]): void {
+    entries.forEach(([date, description]) =>
+      this.addHoliday(date, description),
+    );
+    Object.keys(this.holidays).forEach((month) => {
+      this.holidays[Number(month)].sort((a, b) => a.day - b.day);
+    });
+  }
+
   addHoliday(date: Date, description: string): void {
     const month = dateUtils.getMonth(date);
     const year = dateUtils.getYear(date);
@@ -137,6 +69,81 @@ class Year {
     }
 
     this.holidays[month].push(holiday);
+  }
+}
+
+// @source https://en.wikipedia.org/wiki/Public_holidays_in_Finland
+function getFIConfig(year: number): [Date, string][] {
+  return [
+    [dateUtils.createDate(year, 1, 1), "New Year's Day"],
+    [dateUtils.createDate(year, 1, 6), "Epiphany"],
+    [dateUtils.goodFriday(year), "Good Friday"],
+    [dateUtils.easterSunday(year), "Easter Sunday"],
+    [dateUtils.easterMonday(year), "Easter Monday"],
+    [dateUtils.createDate(year, 5, 1), "May Day"],
+    [dateUtils.ascensionDay(year), "Ascension Day"],
+    [dateUtils.pentecost(year), "Pentecost"],
+    [dateUtils.midsummerEve(year), "Midsummer Eve"],
+    [dateUtils.midsummerDay(year), "Midsummer Day"],
+    [dateUtils.allSaintsDay(year), "All Saints' Day"],
+    [dateUtils.createDate(year, 12, 6), "Independence Day"],
+    [dateUtils.createDate(year, 12, 24), "Christmas Eve"],
+    [dateUtils.createDate(year, 12, 25), "Christmas Day"],
+    [dateUtils.createDate(year, 12, 26), "St. Stephen's Day"],
+  ];
+}
+
+// @source https://en.wikipedia.org/wiki/Public_holidays_in_Sweden
+function getSEConfig(year: number): [Date, string][] {
+  return [
+    [dateUtils.createDate(year, 1, 1), "New Year's Day"],
+    [dateUtils.createDate(year, 1, 6), "Epiphany"],
+    [dateUtils.goodFriday(year), "Good Friday"],
+    [dateUtils.easterSunday(year), "Easter Sunday"],
+    [dateUtils.easterMonday(year), "Easter Monday"],
+    [dateUtils.createDate(year, 5, 1), "May Day"],
+    [dateUtils.ascensionDay(year), "Ascension Day"],
+    [dateUtils.pentecost(year), "Whit Sunday"],
+    [dateUtils.createDate(year, 6, 6), "National Day"],
+    [dateUtils.midsummerEve(year), "Midsummer Eve"],
+    [dateUtils.midsummerDay(year), "Midsummer Day"],
+    [dateUtils.allSaintsDay(year), "All Saints' Day"],
+    [dateUtils.createDate(year, 12, 24), "Christmas Eve"],
+    [dateUtils.createDate(year, 12, 25), "Christmas Day"],
+    [dateUtils.createDate(year, 12, 26), "Second Day of Christmas"],
+    [dateUtils.createDate(year, 12, 31), "New Year's Eve"],
+  ];
+}
+
+// @source https://en.wikipedia.org/wiki/Public_holidays_in_Norway
+function getNOConfig(year: number): [Date, string][] {
+  return [
+    [dateUtils.createDate(year, 1, 1), "New Year's Day"],
+    [dateUtils.maundyThursday(year), "Maundy Thursday"],
+    [dateUtils.goodFriday(year), "Good Friday"],
+    [dateUtils.easterSunday(year), "Easter Sunday"],
+    [dateUtils.easterMonday(year), "Easter Monday"],
+    [dateUtils.createDate(year, 5, 1), "Labour Day"],
+    [dateUtils.createDate(year, 5, 17), "Constitution Day"],
+    [dateUtils.ascensionDay(year), "Ascension Day"],
+    [dateUtils.pentecost(year), "Whit Sunday"],
+    [dateUtils.whitMonday(year), "Whit Monday"],
+    [dateUtils.createDate(year, 12, 24), "Christmas Eve"],
+    [dateUtils.createDate(year, 12, 25), "Christmas Day"],
+    [dateUtils.createDate(year, 12, 26), "Second Day of Christmas"],
+  ];
+}
+
+function getConfig(year: number, country: Country): [Date, string][] {
+  switch (country) {
+    case "FI":
+      return getFIConfig(year);
+    case "SE":
+      return getSEConfig(year);
+    case "NO":
+      return getNOConfig(year);
+    default:
+      throw new Error(`Unsupported country: ${country}`);
   }
 }
 

@@ -1,8 +1,14 @@
 import * as calendar from "./calendar";
 import { Holiday } from "./year-factory";
+import type { Country } from "../index";
 
-export function after(month: number, year: number, index: number): Holiday {
-  const currentHolidays = calendar.byMonth(month, year);
+export function after(
+  month: number,
+  year: number,
+  index: number,
+  country: Country,
+): Holiday {
+  const currentHolidays = calendar.byMonth(month, year, country);
   const nextIndex = index + 1;
 
   if (currentHolidays[nextIndex]) {
@@ -20,7 +26,11 @@ export function after(month: number, year: number, index: number): Holiday {
       nextDate.month += 1;
     }
 
-    const nextHolidays = calendar.byMonth(nextDate.month, nextDate.year);
+    const nextHolidays = calendar.byMonth(
+      nextDate.month,
+      nextDate.year,
+      country,
+    );
 
     if (nextHolidays[0]) {
       nextHoliday = nextHolidays[0];
@@ -30,8 +40,13 @@ export function after(month: number, year: number, index: number): Holiday {
   return nextHoliday;
 }
 
-export function before(month: number, year: number, index: number): Holiday {
-  const currentHolidays = calendar.byMonth(month, year);
+export function before(
+  month: number,
+  year: number,
+  index: number,
+  country: Country,
+): Holiday {
+  const currentHolidays = calendar.byMonth(month, year, country);
   const previousIndex = index - 1;
 
   if (currentHolidays[previousIndex]) {
@@ -52,6 +67,7 @@ export function before(month: number, year: number, index: number): Holiday {
     const previousHolidays = calendar.byMonth(
       previousDate.month,
       previousDate.year,
+      country,
     );
 
     if (previousHolidays[0]) {

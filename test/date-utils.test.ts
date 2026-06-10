@@ -75,4 +75,14 @@ describe("date-utils", function () {
     const expectedDate = dateUtils.createDate(2022, 11, 5);
     expect(dateUtils.allSaintsDay(2022)).toEqual(expectedDate);
   });
+
+  it("should determine Maundy Thursday in 2025", function () {
+    const expectedDate = dateUtils.createDate(2025, 4, 17);
+    expect(dateUtils.maundyThursday(2025)).toEqual(expectedDate);
+  });
+
+  it("should determine Whit Monday in 2025", function () {
+    const expectedDate = dateUtils.createDate(2025, 6, 9);
+    expect(dateUtils.whitMonday(2025)).toEqual(expectedDate);
+  });
 });

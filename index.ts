@@ -5,56 +5,45 @@ export type { Holiday } from "./lib/year-factory";
 
 export type Country = "FI" | "SE" | "NO";
 
-function assertSupported(country: Country): void {
-  if (country !== "FI") {
-    throw new Error(`Country ${country} is not yet implemented.`);
-  }
-}
-
 export function next(
+  country: Country,
   count?: number,
   includeWeekends?: boolean,
-  country: Country = "FI",
 ) {
-  assertSupported(country);
-  return calendar.next(count, includeWeekends);
+  return calendar.next(country, count, includeWeekends);
 }
 
 export function year(
   year: number,
+  country: Country,
   includeWeekends?: boolean,
-  country: Country = "FI",
 ) {
-  assertSupported(country);
-  return calendar.byYear(year, includeWeekends);
+  return calendar.byYear(year, country, includeWeekends);
 }
 
 export function month(
   month: number,
   year: number,
+  country: Country,
   includeWeekends?: boolean,
-  country: Country = "FI",
 ) {
-  assertSupported(country);
-  return calendar.byMonth(month, year, includeWeekends);
+  return calendar.byMonth(month, year, country, includeWeekends);
 }
 
 export function after(
   month: number,
   year: number,
   index: number,
-  country: Country = "FI",
+  country: Country,
 ) {
-  assertSupported(country);
-  return finder.after(month, year, index);
+  return finder.after(month, year, index, country);
 }
 
 export function before(
   month: number,
   year: number,
   index: number,
-  country: Country = "FI",
+  country: Country,
 ) {
-  assertSupported(country);
-  return finder.before(month, year, index);
+  return finder.before(month, year, index, country);
 }

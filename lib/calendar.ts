@@ -1,144 +1,121 @@
 import * as dateUtils from "./date-utils";
 import * as yearFactory from "./year-factory";
 import { Holiday } from "./year-factory";
+import type { Country } from "../index";
 
-interface CalendarState {
-  MAX_HOLIDAYS: number;
-  y: number;
-  m: number;
-  d: number;
-  year: ReturnType<typeof yearFactory.get>;
-  next(count?: number, includeWeekends?: boolean): Holiday[];
-  byYear(year: number, includeWeekends?: boolean): Holiday[];
-  byMonth(month: number, year: number, includeWeekends?: boolean): Holiday[];
+const MAX_HOLIDAYS = 100;
+
+interface Context {
+  year: number;
+  month: number;
+  day: number;
+  country: Country;
+  holidays: ReturnType<typeof yearFactory.get>;
 }
 
-const calendar: CalendarState = {
-  MAX_HOLIDAYS: 100,
-  y: 0,
-  m: 0,
-  d: 0,
-  year: null as any,
+interface ContextOptions {
+  year?: number;
+  month?: number;
+  day?: number;
+  country: Country;
+}
 
-  next(count?: number, includeWeekends?: boolean): Holiday[] {
-    initialize();
-
-    count = count || 3;
-    includeWeekends = includeWeekends || false;
-
-    const holidays: Holiday[] = [];
-
-    if (count > this.MAX_HOLIDAYS) {
-      throw Error(
-        "Cannot request more than {MAX_HOLIDAYS} holidays at once.".replace(
-          "{MAX HOLIDAYS}",
-          String(this.MAX_HOLIDAYS),
-        ),
-      );
-    }
-
-    function collectHolidays() {
-      if (typeof calendar.year.holidays[calendar.m] !== "undefined") {
-        calendar.year.holidays[calendar.m].forEach(function (holiday) {
-          if (holidays.length < count! && holiday.day >= calendar.d) {
-            holidays.push(holiday);
-          }
-        });
-      }
-    }
-
-    while (holidays.length < count) {
-      if (!includeWeekends) {
-        this.year.discardWeekends();
-      }
-
-      collectHolidays();
-
-      if (holidays.length < count) {
-        nextMonth();
-      }
-    }
-
-    return holidays;
-  },
-
-  byYear(year: number, includeWeekends?: boolean): Holiday[] {
-    initialize(year);
-
-    includeWeekends = includeWeekends || false;
-
-    const holidays: Holiday[] = [];
-
-    if (!includeWeekends) {
-      this.year.discardWeekends();
-    }
-
-    Object.keys(this.year.holidays).forEach(function (month) {
-      calendar.year.holidays[Number(month)].forEach(function (holiday) {
-        holidays.push(holiday);
-      });
-    });
-
-    return holidays;
-  },
-
-  byMonth(month: number, year: number, includeWeekends?: boolean): Holiday[] {
-    initialize(year, month);
-
-    includeWeekends = includeWeekends || false;
-
-    if (!month || !year) {
-      throw Error("Month or year missing.");
-    }
-
-    const holidays: Holiday[] = [];
-
-    if (!includeWeekends) {
-      this.year.discardWeekends();
-    }
-
-    if (typeof this.year.holidays[month] !== "undefined") {
-      this.year.holidays[month].forEach(function (holiday) {
-        holidays.push(holiday);
-      });
-    }
-
-    return holidays;
-  },
-};
-
-function initialize(y?: number, m?: number, d?: number): void {
+function createContext({ year, month, day, country }: ContextOptions): Context {
   const today = dateUtils.today();
-  const thisDay = dateUtils.getDay(today);
-  const thisMonth = dateUtils.getMonth(today);
-  const thisYear = dateUtils.getYear(today);
-
-  calendar.y = y || thisYear;
-  calendar.m = m || thisMonth;
-  calendar.d = d || thisDay;
-
-  calendar.year = yearFactory.get(calendar.y);
+  const resolvedYear = year || dateUtils.getYear(today);
+  const resolvedMonth = month || dateUtils.getMonth(today);
+  const resolvedDay = day || dateUtils.getDay(today);
+  return {
+    year: resolvedYear,
+    month: resolvedMonth,
+    day: resolvedDay,
+    country,
+    holidays: yearFactory.get(resolvedYear, country),
+  };
 }
 
-function nextMonth(): void {
-  if (calendar.m === 12) {
-    calendar.m = 1;
-    calendar.y += 1;
-    calendar.d = 1;
-  } else {
-    calendar.m += 1;
-    calendar.d = 1;
+function advanceMonth(ctx: Context): Context {
+  const year = ctx.month === 12 ? ctx.year + 1 : ctx.year;
+  const month = ctx.month === 12 ? 1 : ctx.month + 1;
+  return {
+    ...ctx,
+    year,
+    month,
+    day: 1,
+    holidays: yearFactory.get(year, ctx.country),
+  };
+}
+
+export function next(
+  country: Country,
+  count?: number,
+  includeWeekends?: boolean,
+): Holiday[] {
+  let ctx = createContext({ country });
+  const limit = count || 3;
+
+  if (limit > MAX_HOLIDAYS) {
+    throw Error(`Cannot request more than ${MAX_HOLIDAYS} holidays at once.`);
   }
 
-  calendar.year = yearFactory.get(calendar.y);
+  const holidays: Holiday[] = [];
+
+  while (holidays.length < limit) {
+    if (!includeWeekends) {
+      ctx.holidays.discardWeekends();
+    }
+
+    if (ctx.holidays.holidays[ctx.month] !== undefined) {
+      for (const holiday of ctx.holidays.holidays[ctx.month]) {
+        if (holidays.length < limit && holiday.day >= ctx.day) {
+          holidays.push(holiday);
+        }
+      }
+    }
+
+    if (holidays.length < limit) {
+      ctx = advanceMonth(ctx);
+    }
+  }
+
+  return holidays;
 }
 
-export const next = (count?: number, includeWeekends?: boolean) =>
-  calendar.next(count, includeWeekends);
-export const byYear = (year: number, includeWeekends?: boolean) =>
-  calendar.byYear(year, includeWeekends);
-export const byMonth = (
+export function byYear(
+  year: number,
+  country: Country,
+  includeWeekends?: boolean,
+): Holiday[] {
+  const ctx = createContext({ year, country });
+
+  if (!includeWeekends) {
+    ctx.holidays.discardWeekends();
+  }
+
+  const holidays: Holiday[] = [];
+  Object.keys(ctx.holidays.holidays).forEach((month) => {
+    ctx.holidays.holidays[Number(month)].forEach((holiday) =>
+      holidays.push(holiday),
+    );
+  });
+  return holidays;
+}
+
+export function byMonth(
   month: number,
   year: number,
+  country: Country,
   includeWeekends?: boolean,
-) => calendar.byMonth(month, year, includeWeekends);
+): Holiday[] {
+  if (!month || !year) {
+    throw Error("Month or year missing.");
+  }
+
+  const ctx = createContext({ year, month, country });
+
+  if (!includeWeekends) {
+    ctx.holidays.discardWeekends();
+  }
+
+  return ctx.holidays.holidays[month] ?? [];
+}

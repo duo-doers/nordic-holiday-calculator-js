@@ -128,6 +128,40 @@ function getNOConfig(year: number): [Date, string][] {
   ];
 }
 
+// @source https://en.wikipedia.org/wiki/Public_holidays_in_Denmark
+function getDKConfig(year: number): [Date, string][] {
+  const holidays: [Date, string][] = [
+    ...commonHolidays(year),
+    [dateUtils.maundyThursday(year), "Maundy Thursday"],
+    [dateUtils.pentecost(year), "Whit Sunday"],
+    [dateUtils.whitMonday(year), "Whit Monday"],
+    [dateUtils.createDate(year, 12, 26), "Second Day of Christmas"],
+  ];
+
+  // Store Bededag (Prayer Day) was abolished as a public holiday from 2024
+  if (year <= 2023) {
+    holidays.push([dateUtils.prayerDay(year), "Prayer Day"]);
+  }
+
+  return holidays;
+}
+
+// @source https://en.wikipedia.org/wiki/Public_holidays_in_Iceland
+function getISConfig(year: number): [Date, string][] {
+  return [
+    ...commonHolidays(year),
+    [dateUtils.maundyThursday(year), "Maundy Thursday"],
+    [dateUtils.firstDayOfSummer(year), "First Day of Summer"],
+    [dateUtils.createDate(year, 5, 1), "May Day"],
+    [dateUtils.pentecost(year), "Whit Sunday"],
+    [dateUtils.whitMonday(year), "Whit Monday"],
+    [dateUtils.createDate(year, 6, 17), "National Day"],
+    [dateUtils.commerceDay(year), "Commerce Day"],
+    [dateUtils.createDate(year, 12, 26), "Second Day of Christmas"],
+    [dateUtils.createDate(year, 12, 31), "New Year's Eve"],
+  ];
+}
+
 function getConfig(year: number, country: Country): [Date, string][] {
   switch (country) {
     case "FI":
@@ -136,6 +170,10 @@ function getConfig(year: number, country: Country): [Date, string][] {
       return getSEConfig(year);
     case "NO":
       return getNOConfig(year);
+    case "DK":
+      return getDKConfig(year);
+    case "IS":
+      return getISConfig(year);
     default:
       throw new Error(`Unsupported country: ${country}`);
   }

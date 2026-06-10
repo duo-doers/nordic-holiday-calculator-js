@@ -7,6 +7,8 @@ Currently supported countries:
 - [x] Finland (FI)
 - [x] Sweden (SE)
 - [x] Norway (NO)
+- [x] Denmark (DK)
+- [x] Iceland (IS)
 
 ## Installation
 
@@ -64,7 +66,7 @@ NordicHolidays.before(12, 2025, 0, "FI");
 ### `Country` type
 
 ```ts
-type Country = "FI" | "SE" | "NO";
+type Country = "FI" | "SE" | "NO" | "DK" | "IS";
 ```
 
 ### `Holiday` object shape

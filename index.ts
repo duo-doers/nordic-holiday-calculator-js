@@ -3,7 +3,7 @@ import * as finder from "./lib/finder";
 
 export type { Holiday } from "./lib/year-factory";
 
-export type Country = "FI" | "SE" | "NO";
+export type Country = "FI" | "SE" | "NO" | "DK" | "IS";
 
 export function next(
   country: Country,

@@ -1,3 +1,5 @@
+export const MONDAY = 1;
+export const THURSDAY = 4;
 export const FRIDAY = 5;
 export const SATURDAY = 6;
 export const SUNDAY = 0;
@@ -148,6 +150,43 @@ export function allSaintsDay(year: number): Date {
       }
     });
   }
+
+  return result!;
+}
+
+// Prayer Day (Store Bededag) – 4th Friday after Easter (Denmark, abolished from 2024)
+export function prayerDay(year: number): Date {
+  return addDays(easterSunday(year), 26);
+}
+
+// First Day of Summer – first Thursday on or after April 19 (between Apr 19–25)
+export function firstDayOfSummer(year: number): Date {
+  let result: Date | undefined;
+
+  range(19, 25).forEach(function (day) {
+    if (!result) {
+      const date = createDate(year, 4, day);
+      if (getDayOfWeek(date) === THURSDAY) {
+        result = date;
+      }
+    }
+  });
+
+  return result!;
+}
+
+// Commerce Day – first Monday in August
+export function commerceDay(year: number): Date {
+  let result: Date | undefined;
+
+  range(1, 7).forEach(function (day) {
+    if (!result) {
+      const date = createDate(year, 8, day);
+      if (getDayOfWeek(date) === MONDAY) {
+        result = date;
+      }
+    }
+  });
 
   return result!;
 }

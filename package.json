@@ -1,13 +1,14 @@
 {
   "name": "nordic-holiday-calculator-js",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "A library for listing Nordic national holidays.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "test": "jest",
-    "prepublishOnly": "pnpm test && pnpm build",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "pnpm typecheck && pnpm test && pnpm build",
     "release:patch": "pnpm version patch && git push && git push --tags",
     "release:minor": "pnpm version minor && git push && git push --tags",
     "release:major": "pnpm version major && git push && git push --tags"

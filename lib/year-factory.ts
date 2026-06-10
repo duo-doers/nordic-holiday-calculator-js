@@ -72,23 +72,29 @@ class Year {
   }
 }
 
-// @source https://en.wikipedia.org/wiki/Public_holidays_in_Finland
-function getFIConfig(year: number): [Date, string][] {
+function commonHolidays(year: number): [Date, string][] {
   return [
     [dateUtils.createDate(year, 1, 1), "New Year's Day"],
-    [dateUtils.createDate(year, 1, 6), "Epiphany"],
     [dateUtils.goodFriday(year), "Good Friday"],
     [dateUtils.easterSunday(year), "Easter Sunday"],
     [dateUtils.easterMonday(year), "Easter Monday"],
-    [dateUtils.createDate(year, 5, 1), "May Day"],
     [dateUtils.ascensionDay(year), "Ascension Day"],
+    [dateUtils.createDate(year, 12, 24), "Christmas Eve"],
+    [dateUtils.createDate(year, 12, 25), "Christmas Day"],
+  ];
+}
+
+// @source https://en.wikipedia.org/wiki/Public_holidays_in_Finland
+function getFIConfig(year: number): [Date, string][] {
+  return [
+    ...commonHolidays(year),
+    [dateUtils.createDate(year, 1, 6), "Epiphany"],
+    [dateUtils.createDate(year, 5, 1), "May Day"],
     [dateUtils.pentecost(year), "Pentecost"],
     [dateUtils.midsummerEve(year), "Midsummer Eve"],
     [dateUtils.midsummerDay(year), "Midsummer Day"],
     [dateUtils.allSaintsDay(year), "All Saints' Day"],
     [dateUtils.createDate(year, 12, 6), "Independence Day"],
-    [dateUtils.createDate(year, 12, 24), "Christmas Eve"],
-    [dateUtils.createDate(year, 12, 25), "Christmas Day"],
     [dateUtils.createDate(year, 12, 26), "St. Stephen's Day"],
   ];
 }
@@ -96,20 +102,14 @@ function getFIConfig(year: number): [Date, string][] {
 // @source https://en.wikipedia.org/wiki/Public_holidays_in_Sweden
 function getSEConfig(year: number): [Date, string][] {
   return [
-    [dateUtils.createDate(year, 1, 1), "New Year's Day"],
+    ...commonHolidays(year),
     [dateUtils.createDate(year, 1, 6), "Epiphany"],
-    [dateUtils.goodFriday(year), "Good Friday"],
-    [dateUtils.easterSunday(year), "Easter Sunday"],
-    [dateUtils.easterMonday(year), "Easter Monday"],
     [dateUtils.createDate(year, 5, 1), "May Day"],
-    [dateUtils.ascensionDay(year), "Ascension Day"],
     [dateUtils.pentecost(year), "Whit Sunday"],
     [dateUtils.createDate(year, 6, 6), "National Day"],
     [dateUtils.midsummerEve(year), "Midsummer Eve"],
     [dateUtils.midsummerDay(year), "Midsummer Day"],
     [dateUtils.allSaintsDay(year), "All Saints' Day"],
-    [dateUtils.createDate(year, 12, 24), "Christmas Eve"],
-    [dateUtils.createDate(year, 12, 25), "Christmas Day"],
     [dateUtils.createDate(year, 12, 26), "Second Day of Christmas"],
     [dateUtils.createDate(year, 12, 31), "New Year's Eve"],
   ];
@@ -118,18 +118,12 @@ function getSEConfig(year: number): [Date, string][] {
 // @source https://en.wikipedia.org/wiki/Public_holidays_in_Norway
 function getNOConfig(year: number): [Date, string][] {
   return [
-    [dateUtils.createDate(year, 1, 1), "New Year's Day"],
+    ...commonHolidays(year),
     [dateUtils.maundyThursday(year), "Maundy Thursday"],
-    [dateUtils.goodFriday(year), "Good Friday"],
-    [dateUtils.easterSunday(year), "Easter Sunday"],
-    [dateUtils.easterMonday(year), "Easter Monday"],
     [dateUtils.createDate(year, 5, 1), "Labour Day"],
     [dateUtils.createDate(year, 5, 17), "Constitution Day"],
-    [dateUtils.ascensionDay(year), "Ascension Day"],
     [dateUtils.pentecost(year), "Whit Sunday"],
     [dateUtils.whitMonday(year), "Whit Monday"],
-    [dateUtils.createDate(year, 12, 24), "Christmas Eve"],
-    [dateUtils.createDate(year, 12, 25), "Christmas Day"],
     [dateUtils.createDate(year, 12, 26), "Second Day of Christmas"],
   ];
 }

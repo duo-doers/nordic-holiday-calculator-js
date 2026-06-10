@@ -339,7 +339,8 @@
       <header>
         <h1>Nordic Holiday Calculator</h1>
         <p class="subtitle">
-          Public holidays for FI · SE · NO &mdash; 0 dependencies &mdash;
+          Public holidays for FI &middot; SE &middot; NO &middot; DK &middot; IS
+          &mdash; 0 dependencies &mdash;
           <a
             href="https://github.com/Rikusor/nordic-holiday-calculator-js"
             target="_blank"
@@ -368,6 +369,8 @@
             <button class="country-btn" data-country="FI">🇫🇮 Finland</button>
             <button class="country-btn" data-country="SE">🇸🇪 Sweden</button>
             <button class="country-btn" data-country="NO">🇳🇴 Norway</button>
+            <button class="country-btn" data-country="DK">🇩🇰 Denmark</button>
+            <button class="country-btn" data-country="IS">🇮🇸 Iceland</button>
           </div>
         </div>
 
@@ -423,7 +426,13 @@
         "Friday",
         "Saturday",
       ];
-      const COUNTRY_NAMES = { FI: "Finland", SE: "Sweden", NO: "Norway" };
+      const COUNTRY_NAMES = {
+        FI: "Finland",
+        SE: "Sweden",
+        NO: "Norway",
+        DK: "Denmark",
+        IS: "Iceland",
+      };
 
       const today = new Date();
       const todayKey = Date.UTC(

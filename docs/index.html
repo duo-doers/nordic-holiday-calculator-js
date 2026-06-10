@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nordic Holiday Calculator</title>
+    <style>
+      :root {
+        --bg: #f7f8fa;
+        --surface: #ffffff;
+        --border: #e2e8f0;
+        --text: #1a202c;
+        --muted: #718096;
+        --accent: #2b6cb0;
+        --accent-light: #ebf8ff;
+        --accent-border: #bee3f8;
+        --weekend-bg: #fff5f5;
+        --weekend-badge-bg: #fed7d7;
+        --weekend-badge-text: #c53030;
+        --radius: 10px;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        padding: 2rem 1rem 4rem;
+      }
+
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      header {
+        margin-bottom: 2rem;
+      }
+
+      h1 {
+        font-size: 1.6rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+
+      .subtitle {
+        color: var(--muted);
+        font-size: 0.875rem;
+        margin-top: 0.3rem;
+      }
+
+      .subtitle a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      .subtitle a:hover {
+        text-decoration: underline;
+      }
+
+      /* Controls card */
+      .controls {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.25rem;
+        align-items: flex-end;
+      }
+
+      .control-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+      }
+
+      .control-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: var(--muted);
+      }
+
+      /* Year stepper */
+      .year-stepper {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+
+      .year-btn {
+        width: 30px;
+        height: 30px;
+        border: 1px solid var(--border);
+        background: var(--bg);
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 1rem;
+        line-height: 1;
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .year-btn:hover {
+        background: var(--accent-light);
+        border-color: var(--accent-border);
+      }
+
+      .year-value {
+        font-size: 1.2rem;
+        font-weight: 700;
+        min-width: 4.5ch;
+        text-align: center;
+      }
+
+      /* Country buttons */
+      .country-buttons {
+        display: flex;
+        gap: 0.4rem;
+      }
+
+      .country-btn {
+        padding: 0.35rem 0.85rem;
+        border: 1px solid var(--border);
+        background: var(--bg);
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.875rem;
+        color: var(--text);
+        transition:
+          background 0.1s,
+          border-color 0.1s,
+          color 0.1s;
+        white-space: nowrap;
+      }
+
+      .country-btn:hover {
+        background: var(--accent-light);
+        border-color: var(--accent-border);
+      }
+
+      .country-btn.active {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+        font-weight: 600;
+      }
+
+      /* Weekend toggle */
+      .toggle-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      /* Custom toggle switch */
+      .toggle-track {
+        width: 36px;
+        height: 20px;
+        background: var(--border);
+        border-radius: 10px;
+        position: relative;
+        transition: background 0.2s;
+        flex-shrink: 0;
+      }
+
+      .toggle-track.on {
+        background: var(--accent);
+      }
+
+      .toggle-thumb {
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 14px;
+        height: 14px;
+        background: #fff;
+        border-radius: 50%;
+        transition: left 0.2s;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+      }
+
+      .toggle-track.on .toggle-thumb {
+        left: 19px;
+      }
+
+      .toggle-label {
+        font-size: 0.83rem;
+        color: var(--muted);
+      }
+
+      /* Results header */
+      .results-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 0.75rem;
+        padding: 0 0.25rem;
+      }
+
+      .results-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+      }
+
+      .results-count {
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+
+      /* Holiday list */
+      .holiday-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+      }
+
+      .holiday-item {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 0.75rem 1rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .holiday-item.weekend {
+        background: var(--weekend-bg);
+        border-color: #feb2b2;
+      }
+
+      .holiday-item.today {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 1px var(--accent);
+      }
+
+      .date-block {
+        min-width: 52px;
+        text-align: center;
+        flex-shrink: 0;
+      }
+
+      .date-day {
+        font-size: 1.6rem;
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: -0.02em;
+      }
+
+      .date-month {
+        font-size: 0.65rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+        margin-top: 1px;
+      }
+
+      .holiday-info {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .holiday-name {
+        font-weight: 500;
+        font-size: 0.95rem;
+      }
+
+      .holiday-weekday {
+        font-size: 0.775rem;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+
+      .badge-row {
+        display: flex;
+        gap: 0.3rem;
+        align-items: center;
+      }
+
+      .badge {
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 0.15rem 0.45rem;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        white-space: nowrap;
+      }
+
+      .badge-weekend {
+        background: var(--weekend-badge-bg);
+        color: var(--weekend-badge-text);
+      }
+
+      .badge-today {
+        background: var(--accent-light);
+        color: var(--accent);
+        border: 1px solid var(--accent-border);
+      }
+
+      /* Footer */
+      footer {
+        margin-top: 2.5rem;
+        text-align: center;
+        font-size: 0.78rem;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      footer a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      footer a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Nordic Holiday Calculator</h1>
+        <p class="subtitle">
+          Public holidays for FI · SE · NO &mdash; 0 dependencies &mdash;
+          <a
+            href="https://github.com/Rikusor/nordic-holiday-calculator-js"
+            target="_blank"
+            >view on GitHub</a
+          >
+        </p>
+      </header>
+
+      <div class="controls">
+        <div class="control-group">
+          <span class="control-label">Year</span>
+          <div class="year-stepper">
+            <button class="year-btn" id="prev-year" aria-label="Previous year">
+              &#8722;
+            </button>
+            <span class="year-value" id="year-display"></span>
+            <button class="year-btn" id="next-year" aria-label="Next year">
+              &#43;
+            </button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <span class="control-label">Country</span>
+          <div class="country-buttons">
+            <button class="country-btn" data-country="FI">🇫🇮 Finland</button>
+            <button class="country-btn" data-country="SE">🇸🇪 Sweden</button>
+            <button class="country-btn" data-country="NO">🇳🇴 Norway</button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <span class="control-label">Options</span>
+          <label class="toggle-wrapper" id="weekends-toggle">
+            <div class="toggle-track" id="toggle-track">
+              <div class="toggle-thumb"></div>
+            </div>
+            <span class="toggle-label">Show weekend holidays</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="results-header">
+        <span class="results-title" id="results-title"></span>
+        <span class="results-count" id="results-count"></span>
+      </div>
+
+      <div class="holiday-list" id="holiday-list"></div>
+
+      <footer>
+        0 runtime dependencies &mdash; all holiday dates calculated with no
+        external packages.
+      </footer>
+    </div>
+
+    <script type="module">
+      // Once published: https://esm.sh/nordic-holiday-calculator-js
+      // Update the version pin below after each release, e.g. @0.1.0
+      import * as NordicHolidays from "https://esm.sh/nordic-holiday-calculator-js";
+
+      const MONTHS = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ];
+      const DAYS = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+      ];
+      const COUNTRY_NAMES = { FI: "Finland", SE: "Sweden", NO: "Norway" };
+
+      const today = new Date();
+      const todayKey = Date.UTC(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate(),
+      );
+
+      let currentYear = today.getFullYear();
+      let currentCountry = "FI";
+      let includeWeekends = false;
+
+      function enrich(holiday) {
+        const date = new Date(
+          Date.UTC(holiday.year, holiday.month - 1, holiday.day),
+        );
+        const dow = date.getUTCDay();
+        return {
+          ...holiday,
+          date,
+          weekend: dow === 0 || dow === 6,
+          weekday: DAYS[dow],
+        };
+      }
+
+      function render() {
+        document.getElementById("year-display").textContent = currentYear;
+
+        document.querySelectorAll(".country-btn").forEach((btn) => {
+          btn.classList.toggle(
+            "active",
+            btn.dataset.country === currentCountry,
+          );
+        });
+
+        const all = NordicHolidays.year(currentYear, currentCountry, true).map(
+          enrich,
+        );
+        const shown = includeWeekends ? all : all.filter((h) => !h.weekend);
+        const hidden = all.length - shown.length;
+
+        document.getElementById("results-title").textContent =
+          `${COUNTRY_NAMES[currentCountry]} · ${currentYear}`;
+
+        document.getElementById("results-count").textContent =
+          shown.length +
+          " holiday" +
+          (shown.length !== 1 ? "s" : "") +
+          (hidden > 0 ? ` · ${hidden} on weekends hidden` : "");
+
+        document.getElementById("holiday-list").innerHTML = shown
+          .map((h) => {
+            const isToday = h.date.getTime() === todayKey;
+            const badges = [
+              h.weekend
+                ? `<span class="badge badge-weekend">Weekend</span>`
+                : "",
+              isToday ? `<span class="badge badge-today">Today</span>` : "",
+            ]
+              .filter(Boolean)
+              .join("");
+
+            return `
+            <div class="holiday-item${h.weekend ? " weekend" : ""}${isToday ? " today" : ""}">
+              <div class="date-block">
+                <div class="date-day">${String(h.day).padStart(2, "0")}</div>
+                <div class="date-month">${MONTHS[h.month - 1]}</div>
+              </div>
+              <div class="holiday-info">
+                <div class="holiday-name">${h.description}</div>
+                <div class="holiday-weekday">${h.weekday}</div>
+              </div>
+              ${badges ? `<div class="badge-row">${badges}</div>` : ""}
+            </div>`;
+          })
+          .join("");
+      }
+
+      document.getElementById("prev-year").addEventListener("click", () => {
+        currentYear--;
+        render();
+      });
+
+      document.getElementById("next-year").addEventListener("click", () => {
+        currentYear++;
+        render();
+      });
+
+      document.querySelectorAll(".country-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          currentCountry = btn.dataset.country;
+          render();
+        });
+      });
+
+      document
+        .getElementById("weekends-toggle")
+        .addEventListener("click", () => {
+          includeWeekends = !includeWeekends;
+          document
+            .getElementById("toggle-track")
+            .classList.toggle("on", includeWeekends);
+          render();
+        });
+
+      render();
+    </script>
+  </body>
+</html>

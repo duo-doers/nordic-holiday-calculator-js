@@ -18,9 +18,13 @@
   ],
   "keywords": [],
   "author": "Jan Sobotka, Riku Eteläniemi",
+  "homepage": "https://github.com/duo-doers/nordic-holiday-calculator-js",
+  "bugs": {
+    "url": "https://github.com/duo-doers/nordic-holiday-calculator-js/issues"
+  },
   "repository": {
     "type": "git",
-    "url": "git@github.com:Rikusor/nordic-holiday-calculator-js.git"
+    "url": "https://github.com/duo-doers/nordic-holiday-calculator-js.git"
   },
   "license": "MIT",
   "packageManager": "pnpm@10.30.2",

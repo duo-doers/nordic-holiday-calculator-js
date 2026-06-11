@@ -101,14 +101,19 @@ export function whitMonday(year: number): Date {
   return addDays(easterSunday(year), 50);
 }
 
-export function midsummerEve(year: number): Date {
-  const month = 6;
+export function firstInRange(options: {
+  year: number;
+  month: number;
+  from: number;
+  to: number;
+  weekday: number;
+}): Date {
   let result: Date | undefined;
 
-  range(19, 26).forEach(function (day) {
+  range(options.from, options.to).forEach(function (day) {
     if (!result) {
-      const date = createDate(year, month, day);
-      if (getDayOfWeek(date) === FRIDAY) {
+      const date = createDate(options.year, options.month, day);
+      if (getDayOfWeek(date) === options.weekday) {
         result = date;
       }
     }
@@ -117,41 +122,20 @@ export function midsummerEve(year: number): Date {
   return result!;
 }
 
+export function midsummerEve(year: number): Date {
+  return firstInRange({ year, month: 6, from: 19, to: 26, weekday: FRIDAY });
+}
+
 export function midsummerDay(year: number): Date {
-  const month = 6;
-  let result: Date | undefined;
-
-  range(20, 26).forEach(function (day) {
-    if (!result) {
-      const date = createDate(year, month, day);
-      if (getDayOfWeek(date) === SATURDAY) {
-        result = date;
-      }
-    }
-  });
-
-  return result!;
+  return firstInRange({ year, month: 6, from: 20, to: 26, weekday: SATURDAY });
 }
 
 export function allSaintsDay(year: number): Date {
   const october31 = createDate(year, 10, 31);
-  const secondMonth = 11;
-  let result: Date | undefined;
-
   if (getDayOfWeek(october31) === SATURDAY) {
-    result = october31;
-  } else {
-    range(1, 6).forEach(function (day) {
-      if (!result) {
-        const date = createDate(year, secondMonth, day);
-        if (getDayOfWeek(date) === SATURDAY) {
-          result = date;
-        }
-      }
-    });
+    return october31;
   }
-
-  return result!;
+  return firstInRange({ year, month: 11, from: 1, to: 6, weekday: SATURDAY });
 }
 
 // Prayer Day (Store Bededag) – 4th Friday after Easter (Denmark, abolished from 2024)
@@ -161,34 +145,12 @@ export function prayerDay(year: number): Date {
 
 // First Day of Summer – first Thursday on or after April 19 (between Apr 19–25)
 export function firstDayOfSummer(year: number): Date {
-  let result: Date | undefined;
-
-  range(19, 25).forEach(function (day) {
-    if (!result) {
-      const date = createDate(year, 4, day);
-      if (getDayOfWeek(date) === THURSDAY) {
-        result = date;
-      }
-    }
-  });
-
-  return result!;
+  return firstInRange({ year, month: 4, from: 19, to: 25, weekday: THURSDAY });
 }
 
 // Commerce Day – first Monday in August
 export function commerceDay(year: number): Date {
-  let result: Date | undefined;
-
-  range(1, 7).forEach(function (day) {
-    if (!result) {
-      const date = createDate(year, 8, day);
-      if (getDayOfWeek(date) === MONDAY) {
-        result = date;
-      }
-    }
-  });
-
-  return result!;
+  return firstInRange({ year, month: 8, from: 1, to: 7, weekday: MONDAY });
 }
 
 export function zerofy(num: number): string {
